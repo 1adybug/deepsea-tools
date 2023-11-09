@@ -17,7 +17,9 @@
     "license": "MIT",
     "files": [
         "dist",
-        "compiled"
+        "compiled",
+        "array.d.ts",
+        "index.d.ts"
     ],
     "publishConfig": {
         "access": "public"
