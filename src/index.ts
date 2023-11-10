@@ -1,4 +1,5 @@
 import Equal from "is-equal"
+import Cookies from "js-cookie"
 import { DependencyList, useEffect, useRef } from "react"
 import { SetURLSearchParams } from "react-router-dom"
 import robustSegmentIntersect from "robust-segment-intersect"
@@ -846,4 +847,29 @@ export function setQueryFromData<T extends Record<string, any>>(data: T, fns: Da
             return prev
         }, {})
     )
+}
+
+/** 创建 cookie 的存储 */
+export function createCookieStorage(): Storage {
+    const cookieStorage: Storage = {
+        get length() {
+            return Object.keys(Cookies.get() || {}).length
+        },
+        clear() {
+            Object.keys(Cookies.get() || {})?.forEach(key => Cookies.remove(key))
+        },
+        getItem(key) {
+            return Cookies.get(key) || null
+        },
+        setItem(key, value) {
+            Cookies.set(key, value)
+        },
+        key(index) {
+            return Object.keys(Cookies.get())[index]
+        },
+        removeItem(key) {
+            Cookies.remove(key)
+        }
+    }
+    return cookieStorage
 }
