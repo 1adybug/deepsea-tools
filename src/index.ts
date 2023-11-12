@@ -3,6 +3,7 @@ import Cookies from "js-cookie"
 import { DependencyList, useEffect, useRef } from "react"
 import { SetURLSearchParams } from "react-router-dom"
 import robustSegmentIntersect from "robust-segment-intersect"
+import { chunk, compact, difference, differenceWith, intersection, intersectionWith, sample, union, unionWith, uniq, uniqWith } from "lodash-es"
 export * from "./antd"
 export * from "./tailwind"
 
@@ -566,6 +567,13 @@ export function canCoordsBePolygon(coords: number[][]) {
     return true
 }
 
+/** 
+ * 比较两个数据是否相等
+ */
+function is(a: any, b: any): boolean {
+    return a === 0 && b === 0 || Object.is(a, b)
+}
+
 /** 为数组添加方法 */
 export function extendArrayPrototype() {
     if (!Array.prototype.hasOwnProperty("with")) {
@@ -615,13 +623,7 @@ export function extendArrayPrototype() {
     }
     if (!Array.prototype.hasOwnProperty("toDeduplicated")) {
         function toDeduplicated<T>(this: T[], compareFn?: (a: T, b: T) => boolean): T[] {
-            if (!compareFn) return Array.from(new Set(this))
-            const $: T[] = []
-            this.forEach(item => {
-                if ($.some(it => compareFn(item, it))) return
-                $.push(item)
-            })
-            return $
+            return compareFn ? uniqWith(this, compareFn) : uniq(this)
         }
         Array.prototype.toDeduplicated = toDeduplicated
     }
@@ -667,6 +669,38 @@ export function extendArrayPrototype() {
             return this[index >= 0 ? index : this.length + index]
         }
         Array.prototype.at = at
+    }
+    Array.prototype.chunk = function <T>(this: T[], size: number) {
+        return chunk(this, size)
+    }
+    Array.prototype.nonNullable = function <T>(this: T[]) {
+        return this.filter(item => item !== undefined && item !== null)
+    }
+    Array.prototype.asNonNullable = function <T>(this: T[]) {
+        return this
+    }
+    Array.prototype.difference = function <T>(this: T[], values: T[], compareFn?: (a: T, b: T) => boolean) {
+        return compareFn ? differenceWith(this, values, compareFn) : difference(this, values)
+    }
+    Array.prototype.intersection = function <T>(this: Array<T>, values: Array<T>, compareFn?: (a: T, b: T) => boolean) {
+        return compareFn ? intersectionWith(this, values, compareFn) : intersection(this, values)
+    }
+    Array.prototype.union = function <T>(this: Array<T>, values: Array<T>, compareFn?: (a: T, b: T) => boolean) {
+        return compareFn ? unionWith(this, values, compareFn) : union(this, values)
+    }
+    Array.prototype.random = function <T>(this: Array<T>) {
+        return sample(this)
+    }
+    Array.prototype.groupBy = function <T>(this: Array<T>, compareFn: (a: T, b: T) => boolean = is): Array<Array<T>> {
+        return this.reduce((prev: Array<Array<T>>, item: T) => {
+            const arr = prev.find(it => compareFn(it[0], item))
+            if (arr) {
+                arr.push(item)
+            } else {
+                prev.push([item])
+            }
+            return prev
+        }, [])
     }
 }
 
