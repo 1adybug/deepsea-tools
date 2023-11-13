@@ -59,14 +59,13 @@ export function colorAntdModal(config: ColorAntdModalConfig) {
     `
 }
 
-export type ColorAntdInputConfig = GetColorConfig<"backgroundColor" | "borderColor" | "color" | "placeholderColor" | "hoverBorderColor" | "focusBorderColor">
+export type ColorAntdInputConfig = GetColorConfig<"backgroundColor" | "borderColor" | "color" | "placeholderColor" | "hoverBorderColor" | "focusBorderColor" | "clearBackgroundColor" | "clearColor">
 
 export function colorAntdInput(config: ColorAntdInputConfig) {
-    const { backgroundColor, borderColor, color, placeholderColor, hoverBorderColor, focusBorderColor } = config
+    const { backgroundColor, borderColor, color, placeholderColor, hoverBorderColor, focusBorderColor, clearBackgroundColor, clearColor } = config
 
     return css`
-        &.ant-input,
-        & > input.ant-input {
+        &.ant-input {
             ${text(color)}
             ${bg(backgroundColor)}
             ${border(borderColor)}
@@ -74,16 +73,42 @@ export function colorAntdInput(config: ColorAntdInputConfig) {
             &::placeholder {
                 ${text(placeholderColor)}
             }
-        }
 
-        &.ant-input {
             &:hover {
                 ${border(hoverBorderColor)}
             }
 
-            &:focus,
+            &:focus {
+                ${border(focusBorderColor)}
+            }
+        }
+
+        &.ant-input-affix-wrapper {
+            ${bg(backgroundColor)}
+            ${border(borderColor)}
+
+            &:hover {
+                ${border(hoverBorderColor)}
+            }
+
             &:focus-within {
                 ${border(focusBorderColor)}
+            }
+
+            > .ant-input {
+                ${backgroundColor && backgroundColor.trim() && `background-color: transparent;`}
+                ${text(color)}
+
+                &::placeholder {
+                    ${text(placeholderColor)}
+                }
+            }
+        }
+
+        .ant-input-suffix {
+            .anticon {
+                ${bg(clearBackgroundColor)}
+                ${text(clearColor)}
             }
         }
     `
@@ -148,13 +173,13 @@ export function colorAntdSelect(config: ColorAntdSelectConfig) {
     `
 }
 
-export type ColorAntdTreeConfig = GetColorConfig<"backgroundColor" | "color" | "switcherColor" | "checkboxColor" | "checkboxBorderColor">
+export type ColorAntdTreeConfig = GetColorConfig<"backgroundColor" | "color" | "switcherColor" | "checkboxColor" | "checkboxBorderColor" | "checkboxBackgroundColor">
 
 export function colorAntdTree(config: ColorAntdTreeConfig) {
-    const { backgroundColor, color, switcherColor, checkboxColor, checkboxBorderColor } = config
+    const { backgroundColor, color, switcherColor, checkboxColor, checkboxBorderColor, checkboxBackgroundColor } = config
 
     return css`
-        .ant-tree {
+        &.ant-tree {
             ${bg(backgroundColor)}
 
             .ant-tree-node-content-wrapper {
@@ -167,6 +192,7 @@ export function colorAntdTree(config: ColorAntdTreeConfig) {
 
             .ant-tree-checkbox .ant-tree-checkbox-inner {
                 ${border(checkboxBorderColor)}
+                ${bg(checkboxBackgroundColor)}
 
                 &::after {
                     ${border(checkboxColor)}
@@ -207,7 +233,7 @@ export function colorAntdRangePicker(config: ColorAntdRangePickerConfig) {
                     ${text(calendarColor)}
                 }
             }
-            
+
             .ant-picker-clear {
                 ${text(clearColor)}
                 ${bg(clearBackgroundColor)}
