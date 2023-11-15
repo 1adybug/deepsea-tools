@@ -27,11 +27,11 @@ export type GetColorConfig<T extends PropertyKey> = Partial<Record<T, Color>>
 
 export interface ColorAntdModalConfig {
     /** 背景颜色 */
-    "backgroundColor": Color
+    "backgroundColor"?: Color
     /** 关闭按钮颜色 */
-    "closeColor": Color
+    "closeColor"?: Color
     /** 关闭按钮被覆盖时的背景颜色 */
-    "closeHoverBackgroundColor": Color
+    "closeHoverBackgroundColor"?: Color
 }
 
 export function colorAntdModal(config: ColorAntdModalConfig) {
@@ -68,21 +68,21 @@ export function colorAntdModal(config: ColorAntdModalConfig) {
 
 export interface ColorAntdInputConfig {
     /** 背景颜色 */
-    "backgroundColor": Color
+    "backgroundColor"?: Color
     /** 边框颜色 */
-    "borderColor": Color
+    "borderColor"?: Color
     /** 字体颜色 */
-    "color": Color
+    "color"?: Color
     /** 提示词颜色 */
-    "placeholderColor": Color
+    "placeholderColor"?: Color
     /** 悬浮时边框颜色 */
-    "hoverBorderColor": Color
+    "hoverBorderColor"?: Color
     /** 聚焦时边框颜色 */
-    "focusBorderColor": Color
+    "focusBorderColor"?: Color
     /** 清除按钮背景颜色 */
-    "clearBackgroundColor": Color
+    "clearBackgroundColor"?: Color
     /** 清除按钮颜色 */
-    "clearColor": Color
+    "clearColor"?: Color
 }
 
 export function colorAntdInput(config: ColorAntdInputConfig) {
@@ -140,27 +140,27 @@ export function colorAntdInput(config: ColorAntdInputConfig) {
 
 export interface ColorAntdSelectConfig {
     /** 边框颜色 */
-    "borderColor": Color
+    "borderColor"?: Color
     /** 背景颜色 */
-    "backgroundColor": Color
+    "backgroundColor"?: Color
     /** 字体颜色 */
-    "color": Color
+    "color"?: Color
     /** 清除按钮背景颜色 */
-    "clearBackgroundColor": Color
+    "clearBackgroundColor"?: Color
     /** 清除按钮颜色 */
-    "clearColor": Color
+    "clearColor"?: Color
     /** 提示词颜色 */
-    "placeholderColor": Color
+    "placeholderColor"?: Color
     /** 标签背景颜色 */
-    "tagBackgroundColor": Color
+    "tagBackgroundColor"?: Color
     /** 去除按钮颜色 */
-    "removeColor": Color
+    "removeColor"?: Color
     /** 选择框被打开时字体颜色 */
-    "openColor": Color
+    "openColor"?: Color
     /** 箭头颜色 */
-    "arrowColor": Color
+    "arrowColor"?: Color
     /** 聚焦时边框颜色 */
-    "focusBorderColor": Color
+    "focusBorderColor"?: Color
 }
 
 export function colorAntdSelect(config: ColorAntdSelectConfig) {
@@ -222,17 +222,17 @@ export function colorAntdSelect(config: ColorAntdSelectConfig) {
 
 export interface ColorAntdTreeConfig {
     /** 背景颜色 */
-    "backgroundColor": Color
+    "backgroundColor"?: Color
     /** 字体颜色 */
-    "color": Color
+    "color"?: Color
     /** 展开收起符号颜色 */
-    "switcherColor": Color
+    "switcherColor"?: Color
     /** 复选框颜色 */
-    "checkboxColor": Color
+    "checkboxColor"?: Color
     /** 复选框边框颜色 */
-    "checkboxBorderColor": Color
+    "checkboxBorderColor"?: Color
     /** 复选框背景颜色 */
-    "checkboxBackgroundColor": Color
+    "checkboxBackgroundColor"?: Color
 }
 
 export function colorAntdTree(config: ColorAntdTreeConfig) {
@@ -264,23 +264,23 @@ export function colorAntdTree(config: ColorAntdTreeConfig) {
 
 export interface ColorAntdRangePickerConfig {
     /** 边框颜色 */
-    "borderColor": Color
+    "borderColor"?: Color
     /** 背景颜色 */
-    "backgroundColor": Color
+    "backgroundColor"?: Color
     /** 字体颜色 */
-    "color": Color
+    "color"?: Color
     /** 提示词颜色 */
-    "placeholderColor": Color
+    "placeholderColor"?: Color
     /** 中间分割线颜色 */
-    "separatorColor": Color
+    "separatorColor"?: Color
     /** 日历图标颜色 */
-    "calendarColor": Color
+    "calendarColor"?: Color
     /** 清除按钮颜色 */
-    "clearColor": Color
+    "clearColor"?: Color
     /** 清除按钮背景颜色 */
-    "clearBackgroundColor": Color
+    "clearBackgroundColor"?: Color
     /** 聚焦时颜色 */
-    "activeBarColor": Color
+    "activeBarColor"?: Color
 }
 
 export function colorAntdRangePicker(config: ColorAntdRangePickerConfig) {
@@ -327,17 +327,17 @@ export function colorAntdRangePicker(config: ColorAntdRangePickerConfig) {
 
 export interface ColorAntdTextAreaConfig {
     /** 背景颜色 */
-    "backgroundColor": Color
+    "backgroundColor"?: Color
     /** 字体颜色 */
-    "color": Color
+    "color"?: Color
     /** 边框颜色 */
-    "borderColor": Color
+    "borderColor"?: Color
     /** 提示词颜色 */
-    "placeholderColor": Color
+    "placeholderColor"?: Color
     /** 关闭按钮颜色 */
-    "closeColor": Color
+    "closeColor"?: Color
     /** 关闭按钮背景颜色 */
-    "closeBackgroundColor": Color
+    "closeBackgroundColor"?: Color
 }
 
 export function colorAntdTextArea(config: ColorAntdTextAreaConfig) {
