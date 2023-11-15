@@ -25,10 +25,17 @@ export type Color = CSSProperties["color"]
 
 export type GetColorConfig<T extends PropertyKey> = Partial<Record<T, Color>>
 
-export type ColorAntdModalConfig = GetColorConfig<"backgroundColor" | "closeIconColor" | "closeHoverBackgroundColor">
+export interface ColorAntdModalConfig {
+    /** 背景颜色 */
+    "backgroundColor": Color
+    /** 关闭按钮颜色 */
+    "closeColor": Color
+    /** 关闭按钮被覆盖时的背景颜色 */
+    "closeHoverBackgroundColor": Color
+}
 
 export function colorAntdModal(config: ColorAntdModalConfig) {
-    const { backgroundColor, closeIconColor, closeHoverBackgroundColor } = config
+    const { backgroundColor, closeColor, closeHoverBackgroundColor } = config
 
     return css`
         &.ant-modal {
@@ -50,7 +57,7 @@ export function colorAntdModal(config: ColorAntdModalConfig) {
 
                     .ant-modal-close-x {
                         .ant-modal-close-icon {
-                            ${text(closeIconColor)}
+                            ${text(closeColor)}
                         }
                     }
                 }
@@ -59,7 +66,24 @@ export function colorAntdModal(config: ColorAntdModalConfig) {
     `
 }
 
-export type ColorAntdInputConfig = GetColorConfig<"backgroundColor" | "borderColor" | "color" | "placeholderColor" | "hoverBorderColor" | "focusBorderColor" | "clearBackgroundColor" | "clearColor">
+export interface ColorAntdInputConfig {
+    /** 背景颜色 */
+    "backgroundColor": Color
+    /** 边框颜色 */
+    "borderColor": Color
+    /** 字体颜色 */
+    "color": Color
+    /** 提示词颜色 */
+    "placeholderColor": Color
+    /** 悬浮时边框颜色 */
+    "hoverBorderColor": Color
+    /** 聚焦时边框颜色 */
+    "focusBorderColor": Color
+    /** 清除按钮背景颜色 */
+    "clearBackgroundColor": Color
+    /** 清除按钮颜色 */
+    "clearColor": Color
+}
 
 export function colorAntdInput(config: ColorAntdInputConfig) {
     const { backgroundColor, borderColor, color, placeholderColor, hoverBorderColor, focusBorderColor, clearBackgroundColor, clearColor } = config
@@ -114,7 +138,30 @@ export function colorAntdInput(config: ColorAntdInputConfig) {
     `
 }
 
-export type ColorAntdSelectConfig = GetColorConfig<"borderColor" | "backgroundColor" | "color" | "clearBackgroundColor" | "clearColor" | "placeholderColor" | "tagBackgroundColor" | "removeColor" | "openColor" | "arrowColor" | "focusBorderColor">
+export interface ColorAntdSelectConfig {
+    /** 边框颜色 */
+    "borderColor": Color
+    /** 背景颜色 */
+    "backgroundColor": Color
+    /** 字体颜色 */
+    "color": Color
+    /** 清除按钮背景颜色 */
+    "clearBackgroundColor": Color
+    /** 清除按钮颜色 */
+    "clearColor": Color
+    /** 提示词颜色 */
+    "placeholderColor": Color
+    /** 标签背景颜色 */
+    "tagBackgroundColor": Color
+    /** 去除按钮颜色 */
+    "removeColor": Color
+    /** 选择框被打开时字体颜色 */
+    "openColor": Color
+    /** 箭头颜色 */
+    "arrowColor": Color
+    /** 聚焦时边框颜色 */
+    "focusBorderColor": Color
+}
 
 export function colorAntdSelect(config: ColorAntdSelectConfig) {
     const { borderColor, backgroundColor, color, clearBackgroundColor, clearColor, placeholderColor, tagBackgroundColor, removeColor, openColor, arrowColor, focusBorderColor } = config
@@ -173,7 +220,20 @@ export function colorAntdSelect(config: ColorAntdSelectConfig) {
     `
 }
 
-export type ColorAntdTreeConfig = GetColorConfig<"backgroundColor" | "color" | "switcherColor" | "checkboxColor" | "checkboxBorderColor" | "checkboxBackgroundColor">
+export interface ColorAntdTreeConfig {
+    /** 背景颜色 */
+    "backgroundColor": Color
+    /** 字体颜色 */
+    "color": Color
+    /** 展开收起符号颜色 */
+    "switcherColor": Color
+    /** 复选框颜色 */
+    "checkboxColor": Color
+    /** 复选框边框颜色 */
+    "checkboxBorderColor": Color
+    /** 复选框背景颜色 */
+    "checkboxBackgroundColor": Color
+}
 
 export function colorAntdTree(config: ColorAntdTreeConfig) {
     const { backgroundColor, color, switcherColor, checkboxColor, checkboxBorderColor, checkboxBackgroundColor } = config
@@ -202,7 +262,26 @@ export function colorAntdTree(config: ColorAntdTreeConfig) {
     `
 }
 
-export type ColorAntdRangePickerConfig = GetColorConfig<"borderColor" | "backgroundColor" | "color" | "placeholderColor" | "separatorColor" | "calendarColor" | "clearColor" | "clearBackgroundColor" | "activeBarColor">
+export interface ColorAntdRangePickerConfig {
+    /** 边框颜色 */
+    "borderColor": Color
+    /** 背景颜色 */
+    "backgroundColor": Color
+    /** 字体颜色 */
+    "color": Color
+    /** 提示词颜色 */
+    "placeholderColor": Color
+    /** 中间分割线颜色 */
+    "separatorColor": Color
+    /** 日历图标颜色 */
+    "calendarColor": Color
+    /** 清除按钮颜色 */
+    "clearColor": Color
+    /** 清除按钮背景颜色 */
+    "clearBackgroundColor": Color
+    /** 聚焦时颜色 */
+    "activeBarColor": Color
+}
 
 export function colorAntdRangePicker(config: ColorAntdRangePickerConfig) {
     const { color, backgroundColor, borderColor, placeholderColor, separatorColor, calendarColor, clearBackgroundColor, clearColor, activeBarColor } = config
@@ -241,6 +320,56 @@ export function colorAntdRangePicker(config: ColorAntdRangePickerConfig) {
 
             .ant-picker-active-bar {
                 ${bg(activeBarColor)}
+            }
+        }
+    `
+}
+
+export interface ColorAntdTextAreaConfig {
+    /** 背景颜色 */
+    "backgroundColor": Color
+    /** 字体颜色 */
+    "color": Color
+    /** 边框颜色 */
+    "borderColor": Color
+    /** 提示词颜色 */
+    "placeholderColor": Color
+    /** 关闭按钮颜色 */
+    "closeColor": Color
+    /** 关闭按钮背景颜色 */
+    "closeBackgroundColor": Color
+}
+
+export function colorAntdTextArea(config: ColorAntdTextAreaConfig) {
+    const { backgroundColor, color, borderColor, placeholderColor, closeColor, closeBackgroundColor } = config
+
+    return css`
+        &.ant-input {
+            ${text(color)}
+            ${bg(backgroundColor)}
+            ${border(borderColor)}
+
+            &::placeholder {
+                ${text(placeholderColor)}
+            }
+        }
+
+        &.ant-input-affix-wrapper {
+            ${bg(backgroundColor)}
+            ${border(borderColor)}
+
+            .ant-input {
+                ${text(color)}
+                ${backgroundColor && backgroundColor.trim() && bg("transparent")}
+
+            &::placeholder {
+                    ${text(placeholderColor)}
+                }
+            }
+
+            .anticon-close-circle {
+                ${text(closeColor)}
+                ${bg(closeBackgroundColor)}
             }
         }
     `
