@@ -395,7 +395,7 @@ export interface ColorAntdFormConfig {
     colonColor?: Color
 }
 
-export function ColorAntdForm(config: ColorAntdFormConfig) {
+export function colorAntdForm(config: ColorAntdFormConfig) {
     const { labelColor, requiredColor, colonColor } = config
 
     return css`
