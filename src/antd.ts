@@ -26,16 +26,20 @@ export type Color = CSSProperties["color"]
 export type GetColorConfig<T extends PropertyKey> = Partial<Record<T, Color>>
 
 export interface ColorAntdModalConfig {
+    /** 标题颜色 */
+    titleColor?: Color
     /** 背景颜色 */
-    "backgroundColor"?: Color
+    backgroundColor?: Color
     /** 关闭按钮颜色 */
-    "closeColor"?: Color
+    closeColor?: Color
+    /** 关闭按钮颜色 */
+    closeHoverColor?: Color
     /** 关闭按钮被覆盖时的背景颜色 */
-    "closeHoverBackgroundColor"?: Color
+    closeHoverBackgroundColor?: Color
 }
 
 export function colorAntdModal(config: ColorAntdModalConfig) {
-    const { backgroundColor, closeColor, closeHoverBackgroundColor } = config
+    const { backgroundColor, closeColor, closeHoverBackgroundColor, titleColor, closeHoverColor } = config
 
     return css`
         &.ant-modal {
@@ -47,12 +51,19 @@ export function colorAntdModal(config: ColorAntdModalConfig) {
 
                     .ant-modal-title {
                         ${bg(backgroundColor)}
+                        ${text(titleColor)}
                     }
                 }
 
                 .ant-modal-close {
                     &:hover {
                         ${bg(closeHoverBackgroundColor)}
+
+                        .ant-modal-close-x {
+                            .ant-modal-close-icon {
+                                ${text(closeHoverColor)}
+                            }
+                        }
                     }
 
                     .ant-modal-close-x {
@@ -68,21 +79,21 @@ export function colorAntdModal(config: ColorAntdModalConfig) {
 
 export interface ColorAntdInputConfig {
     /** 背景颜色 */
-    "backgroundColor"?: Color
+    backgroundColor?: Color
     /** 边框颜色 */
-    "borderColor"?: Color
+    borderColor?: Color
     /** 字体颜色 */
-    "color"?: Color
+    color?: Color
     /** 提示词颜色 */
-    "placeholderColor"?: Color
+    placeholderColor?: Color
     /** 悬浮时边框颜色 */
-    "hoverBorderColor"?: Color
+    hoverBorderColor?: Color
     /** 聚焦时边框颜色 */
-    "focusBorderColor"?: Color
+    focusBorderColor?: Color
     /** 清除按钮背景颜色 */
-    "clearBackgroundColor"?: Color
+    clearBackgroundColor?: Color
     /** 清除按钮颜色 */
-    "clearColor"?: Color
+    clearColor?: Color
 }
 
 export function colorAntdInput(config: ColorAntdInputConfig) {
@@ -120,7 +131,7 @@ export function colorAntdInput(config: ColorAntdInputConfig) {
             }
 
             > .ant-input {
-                ${backgroundColor && backgroundColor.trim() && `background-color: transparent;`}
+                ${backgroundColor && backgroundColor.trim() ? `background-color: transparent;` : ""}
                 ${text(color)}
 
                 &::placeholder {
@@ -140,27 +151,27 @@ export function colorAntdInput(config: ColorAntdInputConfig) {
 
 export interface ColorAntdSelectConfig {
     /** 边框颜色 */
-    "borderColor"?: Color
+    borderColor?: Color
     /** 背景颜色 */
-    "backgroundColor"?: Color
+    backgroundColor?: Color
     /** 字体颜色 */
-    "color"?: Color
+    color?: Color
     /** 清除按钮背景颜色 */
-    "clearBackgroundColor"?: Color
+    clearBackgroundColor?: Color
     /** 清除按钮颜色 */
-    "clearColor"?: Color
+    clearColor?: Color
     /** 提示词颜色 */
-    "placeholderColor"?: Color
+    placeholderColor?: Color
     /** 标签背景颜色 */
-    "tagBackgroundColor"?: Color
+    tagBackgroundColor?: Color
     /** 去除按钮颜色 */
-    "removeColor"?: Color
+    removeColor?: Color
     /** 选择框被打开时字体颜色 */
-    "openColor"?: Color
+    openColor?: Color
     /** 箭头颜色 */
-    "arrowColor"?: Color
+    arrowColor?: Color
     /** 聚焦时边框颜色 */
-    "focusBorderColor"?: Color
+    focusBorderColor?: Color
 }
 
 export function colorAntdSelect(config: ColorAntdSelectConfig) {
@@ -222,17 +233,17 @@ export function colorAntdSelect(config: ColorAntdSelectConfig) {
 
 export interface ColorAntdTreeConfig {
     /** 背景颜色 */
-    "backgroundColor"?: Color
+    backgroundColor?: Color
     /** 字体颜色 */
-    "color"?: Color
+    color?: Color
     /** 展开收起符号颜色 */
-    "switcherColor"?: Color
+    switcherColor?: Color
     /** 复选框颜色 */
-    "checkboxColor"?: Color
+    checkboxColor?: Color
     /** 复选框边框颜色 */
-    "checkboxBorderColor"?: Color
+    checkboxBorderColor?: Color
     /** 复选框背景颜色 */
-    "checkboxBackgroundColor"?: Color
+    checkboxBackgroundColor?: Color
 }
 
 export function colorAntdTree(config: ColorAntdTreeConfig) {
@@ -264,23 +275,23 @@ export function colorAntdTree(config: ColorAntdTreeConfig) {
 
 export interface ColorAntdRangePickerConfig {
     /** 边框颜色 */
-    "borderColor"?: Color
+    borderColor?: Color
     /** 背景颜色 */
-    "backgroundColor"?: Color
+    backgroundColor?: Color
     /** 字体颜色 */
-    "color"?: Color
+    color?: Color
     /** 提示词颜色 */
-    "placeholderColor"?: Color
+    placeholderColor?: Color
     /** 中间分割线颜色 */
-    "separatorColor"?: Color
+    separatorColor?: Color
     /** 日历图标颜色 */
-    "calendarColor"?: Color
+    calendarColor?: Color
     /** 清除按钮颜色 */
-    "clearColor"?: Color
+    clearColor?: Color
     /** 清除按钮背景颜色 */
-    "clearBackgroundColor"?: Color
+    clearBackgroundColor?: Color
     /** 聚焦时颜色 */
-    "activeBarColor"?: Color
+    activeBarColor?: Color
 }
 
 export function colorAntdRangePicker(config: ColorAntdRangePickerConfig) {
@@ -327,17 +338,17 @@ export function colorAntdRangePicker(config: ColorAntdRangePickerConfig) {
 
 export interface ColorAntdTextAreaConfig {
     /** 背景颜色 */
-    "backgroundColor"?: Color
+    backgroundColor?: Color
     /** 字体颜色 */
-    "color"?: Color
+    color?: Color
     /** 边框颜色 */
-    "borderColor"?: Color
+    borderColor?: Color
     /** 提示词颜色 */
-    "placeholderColor"?: Color
+    placeholderColor?: Color
     /** 关闭按钮颜色 */
-    "closeColor"?: Color
+    closeColor?: Color
     /** 关闭按钮背景颜色 */
-    "closeBackgroundColor"?: Color
+    closeBackgroundColor?: Color
 }
 
 export function colorAntdTextArea(config: ColorAntdTextAreaConfig) {
@@ -360,7 +371,7 @@ export function colorAntdTextArea(config: ColorAntdTextAreaConfig) {
 
             .ant-input {
                 ${text(color)}
-                ${backgroundColor && backgroundColor.trim() && bg("transparent")}
+                ${backgroundColor && backgroundColor.trim() ? bg("transparent") : ""}
 
             &::placeholder {
                     ${text(placeholderColor)}
@@ -370,6 +381,35 @@ export function colorAntdTextArea(config: ColorAntdTextAreaConfig) {
             .anticon-close-circle {
                 ${text(closeColor)}
                 ${bg(closeBackgroundColor)}
+            }
+        }
+    `
+}
+
+export interface ColorAntdFormConfig {
+    /** label 颜色 */
+    labelColor?: Color
+    /** 星号 颜色 */
+    requiredColor?: Color
+    /** 冒号颜色 */
+    colonColor?: Color
+}
+
+export function ColorAntdForm(config: ColorAntdFormConfig) {
+    const { labelColor, requiredColor, colonColor } = config
+
+    return css`
+        &.ant-form {
+            label {
+                ${text(labelColor)}
+
+                &.ant-form-item-required:not(.ant-form-item-required-mark-optional)::before {
+                    ${text(requiredColor)}
+                }
+
+                &::after {
+                    ${text(colonColor)}
+                }
             }
         }
     `
