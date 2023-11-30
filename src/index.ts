@@ -6,6 +6,7 @@ import robustSegmentIntersect from "robust-segment-intersect"
 import { chunk, compact, difference, differenceWith, intersection, intersectionWith, sample, union, unionWith, uniq, uniqWith } from "lodash-es"
 export * from "./antd"
 export * from "./tailwind"
+export * from "./coordinate"
 
 /**
  * 休眠指定时间
@@ -567,11 +568,11 @@ export function canCoordsBePolygon(coords: number[][]) {
     return true
 }
 
-/** 
+/**
  * 比较两个数据是否相等
  */
 function is(a: any, b: any): boolean {
-    return a === 0 && b === 0 || Object.is(a, b)
+    return (a === 0 && b === 0) || Object.is(a, b)
 }
 
 /** 为数组添加方法 */
