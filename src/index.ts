@@ -908,3 +908,7 @@ export function createCookieStorage(): Storage {
     }
     return cookieStorage
 }
+
+export function getKeys<T extends Object>(object: T): (keyof T)[] {
+    return Object.keys(object) as (keyof T)[]
+}
