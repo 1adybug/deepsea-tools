@@ -3,7 +3,7 @@ import Cookies from "js-cookie"
 import { DependencyList, useEffect, useRef } from "react"
 import { SetURLSearchParams } from "react-router-dom"
 import robustSegmentIntersect from "robust-segment-intersect"
-import { chunk, compact, difference, differenceWith, intersection, intersectionWith, sample, union, unionWith, uniq, uniqWith } from "lodash-es"
+import { chunk, compact, difference, differenceWith, intersection, intersectionWith, isPlainObject, sample, union, unionWith, uniq, uniqWith } from "lodash-es"
 export * from "./antd"
 export * from "./tailwind"
 export * from "./coordinate"
@@ -911,4 +911,88 @@ export function createCookieStorage(): Storage {
 
 export function getKeys<T extends Object>(object: T): (keyof T)[] {
     return Object.keys(object) as (keyof T)[]
+}
+
+const parent = Symbol("parent")
+const parentKey = Symbol("parentKey")
+
+export class O<T extends Record<string, any>, P = T> {
+    private data: T
+    private [parent]?: O<Record<string, any>> | A<any>
+    private [parentKey]?: string | number
+    constructor(data: T) {
+        if (!isPlainObject(data)) throw new TypeError("class O only supports plain object!")
+        this.data = data
+    }
+    get = <K extends keyof T>(key: K): T[K] extends Array<any> ? A<T[K][number], P> : T[K] extends Record<string, any> ? O<T[K], P> : T[K] => {
+        const v = this.data[key]
+        if (Array.isArray(v)) {
+            const result = new A(v) as any
+            result[parent] = this
+            result[parentKey] = key
+            return result
+        }
+        if (isPlainObject(v)) {
+            const result = new O(v) as any
+            result[parent] = this
+            result[parentKey] = key
+            return result
+        }
+        return v as any
+    }
+    set = <K extends keyof T>(key: K, newValue: T[K]): typeof this => {
+        this.data = { ...this.data }
+        this.data[key] = newValue
+        if (this[parent]) {
+            ;(this[parent] as any).set(this[parentKey], this.data)
+        }
+        return this
+    }
+    valueOf = (): P => {
+        if (!this[parent]) return this.data as any
+        return this[parent].valueOf() as any
+    }
+}
+
+export class A<T, P = T[]> {
+    private data: T[]
+    private [parent]?: O<Record<string, any>> | A<any>
+    private [parentKey]?: string | number
+    constructor(data: T[]) {
+        if (!Array.isArray(data)) throw new TypeError("class A only supports array!")
+        this.data = data
+    }
+    get = (key: number): T extends Array<any> ? A<T[number], P> : T extends Record<string, any> ? O<T, P> : T => {
+        const v = this.data[key]
+        if (Array.isArray(v)) {
+            const result = new A(v) as any
+            result[parent] = this
+            result[parentKey] = key
+            return result
+        }
+        if (isPlainObject(v)) {
+            const result = new O(v as any) as any
+            result[parent] = this
+            result[parentKey] = key
+            return result
+        }
+        return v as any
+    }
+    set = (key: number, newValue: T): typeof this => {
+        this.data = [...this.data]
+        this.data[key] = newValue
+        if (this[parent]) {
+            ;(this[parent] as any).set(this[parentKey], this.data)
+        }
+        return this
+    }
+    valueOf = (): P => {
+        if (!this[parent]) return this.data as any
+        return this[parent].valueOf() as any
+    }
+}
+
+/** 安全地修改一个对象或者数组 */
+export function M<T extends Array<any> | Record<string, any>>(data: T): T extends Array<any> ? A<T[number]> : O<T> {
+    return (Array.isArray(data) ? new A(data) : new O(data)) as any
 }
