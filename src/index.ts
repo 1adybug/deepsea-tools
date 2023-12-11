@@ -1025,7 +1025,7 @@ export function isFullWidthChar(char: string) {
 }
 
 export interface SplitTextToLinesOptions {
-    /** 每一行的最大宽度，全角占据 2，半角占据 1 */
+    /** 每一行的最大宽度，全角占据 1，半角占据 0.5 */
     maxWidth?: number
     /** 最大行数 */
     maxLines?: number
@@ -1036,7 +1036,8 @@ export function splitTextToLines(text: string, options?: SplitTextToLinesOptions
         str: string
         length: number
     }
-    const { maxWidth = Infinity, maxLines = Infinity } = options ?? {}
+    const { maxWidth: originMaxWidth = Infinity, maxLines = Infinity } = options ?? {}
+    const maxWidth = originMaxWidth * 2
     const lines: Line[] = [{ str: "", length: 0 }]
     let overflow = false
     for (let i = 0; i < text.length; i++) {
