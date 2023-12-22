@@ -1,9 +1,10 @@
 {
     "name": "deepsea-tools",
-    "version": "1.16.2",
+    "version": "1.16.3-beta",
     "description": "格数科技自用工具包",
-    "module": "dist/index.js",
-    "types": "dist/index.d.ts",
+    "main": "dist/cjs/index.js",
+    "module": "dist/esm/index.js",
+    "types": "dist/esm/index.d.ts",
     "scripts": {
         "dev": "father dev",
         "build": "father build",
@@ -35,7 +36,7 @@
         "js-cookie": "^3.0.5",
         "lodash-es": "^4.17.21",
         "react": "^18.2.0",
-        "react-router-dom": "^6.18.0",
+        "react-router-dom": "^6.21.1",
         "robust-segment-intersect": "^1.0.1"
     },
     "devDependencies": {

@@ -1,12 +1,12 @@
 import Equal from "is-equal"
 import Cookies from "js-cookie"
+import { chunk, difference, differenceWith, intersection, intersectionWith, isPlainObject, sample, union, unionWith, uniq, uniqWith } from "lodash-es"
 import { DependencyList, useEffect, useRef } from "react"
 import { SetURLSearchParams } from "react-router-dom"
 import robustSegmentIntersect from "robust-segment-intersect"
-import { chunk, compact, difference, differenceWith, intersection, intersectionWith, isPlainObject, sample, union, unionWith, uniq, uniqWith } from "lodash-es"
 export * from "./antd"
-export * from "./tailwind"
 export * from "./coordinate"
+export * from "./tailwind"
 
 /**
  * 休眠指定时间
