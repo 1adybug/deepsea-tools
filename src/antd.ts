@@ -94,10 +94,14 @@ export interface ColorAntdInputConfig {
     clearBackgroundColor?: Color
     /** 清除按钮颜色 */
     clearColor?: Color
+    /** 标签颜色 */
+    addonColor?: Color
+    /** 标签背景颜色 */
+    addonBackgroundColor?: Color
 }
 
 export function colorAntdInput(config: ColorAntdInputConfig) {
-    const { backgroundColor, borderColor, color, placeholderColor, hoverBorderColor, focusBorderColor, clearBackgroundColor, clearColor } = config
+    const { backgroundColor, borderColor, color, placeholderColor, hoverBorderColor, focusBorderColor, clearBackgroundColor, clearColor, addonColor, addonBackgroundColor } = config
 
     return css`
         &.ant-input {
@@ -115,6 +119,46 @@ export function colorAntdInput(config: ColorAntdInputConfig) {
 
             &:focus {
                 ${border(focusBorderColor)}
+            }
+        }
+
+        &.ant-input-number {
+            ${bg(backgroundColor)}
+            ${border(borderColor)}
+
+            &:hover {
+                ${border(hoverBorderColor)}
+            }
+
+            &:focus-within {
+                ${border(focusBorderColor)}
+            }
+        }
+
+        .ant-input-number {
+            ${bg(backgroundColor)}
+            ${border(borderColor)}
+
+            &:hover {
+                ${border(hoverBorderColor)}
+            }
+
+            &:focus-within {
+                ${border(focusBorderColor)}
+            }
+        }
+
+        .ant-input-number-group-addon {
+            ${bg(addonBackgroundColor)}
+            ${border(borderColor)}
+            ${text(addonColor)}
+        }
+
+        .ant-input-number-input {
+            ${text(color)}
+
+            &::placeholder {
+                ${text(placeholderColor)}
             }
         }
 
