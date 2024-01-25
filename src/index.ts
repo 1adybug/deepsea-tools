@@ -1,9 +1,11 @@
+import { ClassValue, clsx as _clsx } from "clsx"
 import Equal from "is-equal"
 import Cookies from "js-cookie"
 import { chunk, difference, differenceWith, intersection, intersectionWith, isPlainObject, sample, union, unionWith, uniq, uniqWith } from "lodash-es"
 import { DependencyList, useEffect, useRef } from "react"
 import { SetURLSearchParams } from "react-router-dom"
 import robustSegmentIntersect from "robust-segment-intersect"
+import { twMerge } from "tailwind-merge"
 export * from "./antd"
 export * from "./coordinate"
 export * from "./tailwind"
@@ -1074,4 +1076,11 @@ export function splitTextToLines(text: string, options?: SplitTextToLinesOptions
         last.str = str.slice(0, -1 - final) + "..."
     }
     return lines.map(line => line.str)
+}
+
+/**
+ * 让 clsx 支持 tailwindcss 的合并
+ */
+export function clsx(...inputs: ClassValue[]) {
+    return twMerge(_clsx(...inputs))
 }

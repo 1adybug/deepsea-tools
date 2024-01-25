@@ -28,15 +28,18 @@
         "index.d.ts"
     ],
     "publishConfig": {
-        "access": "public"
+        "access": "public",
+        "registry": "https://registry.npmjs.org/"
     },
     "dependencies": {
         "@emotion/css": "^11.11.2",
+        "clsx": "^2.1.0",
         "is-equal": "^1.7.0",
         "js-cookie": "^3.0.5",
         "lodash-es": "^4.17.21",
         "react-router-dom": "^6.21.1",
-        "robust-segment-intersect": "^1.0.1"
+        "robust-segment-intersect": "^1.0.1",
+        "tailwind-merge": "^2.2.1"
     },
     "peerDependencies": {
         "react": ">=16.8.0"
