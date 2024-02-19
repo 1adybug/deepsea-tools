@@ -21,11 +21,11 @@
     ],
     "license": "MIT",
     "files": [
-        "dist",
-        "compiled",
-        "src",
         "array.d.ts",
-        "index.d.ts"
+        "compiled",
+        "dist",
+        "modules.d.ts",
+        "src"
     ],
     "publishConfig": {
         "access": "public",
@@ -36,18 +36,20 @@
         "clsx": "^2.1.0",
         "is-equal": "^1.7.0",
         "js-cookie": "^3.0.5",
-        "lodash-es": "^4.17.21",
-        "react-router-dom": "^6.21.1",
+        "react-router-dom": "^6.22.1",
         "robust-segment-intersect": "^1.0.1",
+        "soda-antd": "^0.0.1",
+        "soda-array": "^0.0.1",
+        "soda-coordinate": "^0.0.1",
+        "soda-tailwind": "^0.0.1",
         "tailwind-merge": "^2.2.1"
-    },
-    "peerDependencies": {
-        "react": ">=16.8.0"
     },
     "devDependencies": {
         "@types/js-cookie": "^3.0.6",
-        "@types/lodash-es": "^4.17.11",
-        "@types/react": "^18.2.37",
-        "father": "^4.3.7"
+        "@types/react": "^18.2.56",
+        "father": "^4.4.0"
+    },
+    "peerDependencies": {
+        "react": ">=16.8.0"
     }
 }

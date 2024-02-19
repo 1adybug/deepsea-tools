@@ -1,14 +1,14 @@
 import { ClassValue, clsx as _clsx } from "clsx"
 import Equal from "is-equal"
 import Cookies from "js-cookie"
-import { chunk, difference, differenceWith, intersection, intersectionWith, isPlainObject, sample, union, unionWith, uniq, uniqWith } from "lodash-es"
 import { DependencyList, useEffect, useRef } from "react"
 import { SetURLSearchParams } from "react-router-dom"
 import robustSegmentIntersect from "robust-segment-intersect"
 import { twMerge } from "tailwind-merge"
-export * from "./antd"
-export * from "./coordinate"
-export * from "./tailwind"
+export * from "soda-antd"
+export * from "soda-array"
+export * from "soda-coordinate"
+export * from "soda-tailwind"
 
 /**
  * 休眠指定时间
@@ -571,143 +571,6 @@ export function canCoordsBePolygon(coords: number[][]) {
 }
 
 /**
- * 比较两个数据是否相等
- */
-function is(a: any, b: any): boolean {
-    return (a === 0 && b === 0) || Object.is(a, b)
-}
-
-/** 为数组添加方法 */
-export function extendArrayPrototype() {
-    if (!Array.prototype.hasOwnProperty("with")) {
-        class A {
-            static with<T>(this: T[], index: number, value: T): T[] {
-                if (!Number.isInteger(index) || index >= this.length || index < this.length * -1) {
-                    throw new RangeError(`Invalid index : ${index}`)
-                }
-                const $ = [...this]
-                $[index >= 0 ? index : this.length + index] = value
-                return $
-            }
-        }
-        Array.prototype.with = A.with
-    }
-    if (!Array.prototype.hasOwnProperty("toReversed")) {
-        function toReversed<T>(this: T[]): T[] {
-            const $ = [...this]
-            $.reverse()
-            return $
-        }
-        Array.prototype.toReversed = toReversed
-    }
-    if (!Array.prototype.hasOwnProperty("toShifted")) {
-        function toShifted<T>(this: T[]): T[] {
-            const $ = [...this]
-            $.shift()
-            return $
-        }
-        Array.prototype.toShifted = toShifted
-    }
-    if (!Array.prototype.hasOwnProperty("toPopped")) {
-        function toPopped<T>(this: T[]): T[] {
-            const $ = [...this]
-            $.pop()
-            return $
-        }
-        Array.prototype.toPopped = toPopped
-    }
-    if (!Array.prototype.hasOwnProperty("toSorted")) {
-        function toSorted<T>(this: T[], compareFn?: (a: T, b: T) => number): T[] {
-            const $ = [...this]
-            $.sort(compareFn)
-            return $
-        }
-        Array.prototype.toSorted = toSorted
-    }
-    if (!Array.prototype.hasOwnProperty("toDeduplicated")) {
-        function toDeduplicated<T>(this: T[], compareFn?: (a: T, b: T) => boolean): T[] {
-            return compareFn ? uniqWith(this, compareFn) : uniq(this)
-        }
-        Array.prototype.toDeduplicated = toDeduplicated
-    }
-    if (!Array.prototype.hasOwnProperty("toSpliced")) {
-        function toSpliced<T>(this: T[], start: number, deleteCount?: number, ...items: T[]): T[] {
-            const $ = [...this]
-            if (deleteCount === undefined) {
-                $.splice(start)
-            } else {
-                $.splice(start, deleteCount, ...items)
-            }
-            return $
-        }
-        Array.prototype.toSpliced = toSpliced
-    }
-    if (!Array.prototype.hasOwnProperty("toPushed")) {
-        function toPushed<T>(this: T[], ...items: T[]): T[] {
-            const $ = [...this]
-            $.push(...items)
-            return $
-        }
-        Array.prototype.toPushed = toPushed
-    }
-    if (!Array.prototype.hasOwnProperty("toUnshifted")) {
-        function toUnshifted<T>(this: T[], ...items: T[]): T[] {
-            const $ = [...this]
-            $.unshift(...items)
-            return $
-        }
-        Array.prototype.toUnshifted = toUnshifted
-    }
-    if (!Array.prototype.hasOwnProperty("toExchange")) {
-        function toExchange<T>(this: T[], a: number, b: number): T[] {
-            return this.with(a, this[b]).with(b, this[a])
-        }
-        Array.prototype.toExchange = toExchange
-    }
-    if (!Array.prototype.hasOwnProperty("at")) {
-        function at<T>(this: T[], index: number): T | undefined {
-            if (!Number.isInteger(index)) {
-                throw new RangeError(`Invalid index : ${index}`)
-            }
-            return this[index >= 0 ? index : this.length + index]
-        }
-        Array.prototype.at = at
-    }
-    Array.prototype.chunk = function <T>(this: T[], size: number) {
-        return chunk(this, size)
-    }
-    Array.prototype.nonNullable = function <T>(this: T[]) {
-        return this.filter(item => item !== undefined && item !== null)
-    }
-    Array.prototype.asNonNullable = function <T>(this: T[]) {
-        return this
-    }
-    Array.prototype.difference = function <T>(this: T[], values: T[], compareFn?: (a: T, b: T) => boolean) {
-        return compareFn ? differenceWith(this, values, compareFn) : difference(this, values)
-    }
-    Array.prototype.intersection = function <T>(this: Array<T>, values: Array<T>, compareFn?: (a: T, b: T) => boolean) {
-        return compareFn ? intersectionWith(this, values, compareFn) : intersection(this, values)
-    }
-    Array.prototype.union = function <T>(this: Array<T>, values: Array<T>, compareFn?: (a: T, b: T) => boolean) {
-        return compareFn ? unionWith(this, values, compareFn) : union(this, values)
-    }
-    Array.prototype.random = function <T>(this: Array<T>) {
-        return sample(this)
-    }
-    Array.prototype.groupBy = function <T>(this: Array<T>, compareFn: (a: T, b: T) => boolean = is): Array<Array<T>> {
-        return this.reduce((prev: Array<Array<T>>, item: T) => {
-            const arr = prev.find(it => compareFn(it[0], item))
-            if (arr) {
-                arr.push(item)
-            } else {
-                prev.push([item])
-            }
-            return prev
-        }, [])
-    }
-}
-
-/**
  * base64 转 blob
  * @param {string} base64 需要转换的 base64
  * @returns {Blob}
@@ -790,9 +653,9 @@ export function setFrameInterval(callback: () => void, frames: number): () => vo
  */
 export function useArraySignal<T>(data: T[], compareFn?: (a: T, b: T) => boolean) {
     const dataRef = useRef(data)
-    const signal = useRef(Date.now())
+    const signal = useRef(Symbol("arraySignal"))
     if (dataRef.current.length !== data.length || dataRef.current.some((it, idx) => (compareFn ? !compareFn(it, data[idx]) : it !== data[idx]))) {
-        signal.current = Date.now()
+        signal.current = Symbol("arraySignal")
         dataRef.current = data
     }
     return signal.current
@@ -911,92 +774,8 @@ export function createCookieStorage(): Storage {
     return cookieStorage
 }
 
-export function getKeys<T extends Object>(object: T): (keyof T)[] {
+export function getKeys<T extends object>(object: T): (keyof T)[] {
     return Object.keys(object) as (keyof T)[]
-}
-
-const parent = Symbol("parent")
-const parentKey = Symbol("parentKey")
-
-export class O<T extends Record<string, any>, P = T> {
-    private data: T
-    private [parent]?: O<Record<string, any>> | A<any>
-    private [parentKey]?: string | number
-    constructor(data: T) {
-        if (!isPlainObject(data)) throw new TypeError("class O only supports plain object!")
-        this.data = data
-    }
-    get = <K extends keyof T>(key: K): T[K] extends Array<any> ? A<T[K][number], P> : T[K] extends Record<string, any> ? O<T[K], P> : T[K] => {
-        const v = this.data[key]
-        if (Array.isArray(v)) {
-            const result = new A(v) as any
-            result[parent] = this
-            result[parentKey] = key
-            return result
-        }
-        if (isPlainObject(v)) {
-            const result = new O(v) as any
-            result[parent] = this
-            result[parentKey] = key
-            return result
-        }
-        return v as any
-    }
-    set = <K extends keyof T>(key: K, newValue: T[K]): typeof this => {
-        this.data = { ...this.data }
-        this.data[key] = newValue
-        if (this[parent]) {
-            ;(this[parent] as any).set(this[parentKey], this.data)
-        }
-        return this
-    }
-    valueOf = (): P => {
-        if (!this[parent]) return this.data as any
-        return this[parent].valueOf() as any
-    }
-}
-
-export class A<T, P = T[]> {
-    private data: T[]
-    private [parent]?: O<Record<string, any>> | A<any>
-    private [parentKey]?: string | number
-    constructor(data: T[]) {
-        if (!Array.isArray(data)) throw new TypeError("class A only supports array!")
-        this.data = data
-    }
-    get = (key: number): T extends Array<any> ? A<T[number], P> : T extends Record<string, any> ? O<T, P> : T => {
-        const v = this.data[key]
-        if (Array.isArray(v)) {
-            const result = new A(v) as any
-            result[parent] = this
-            result[parentKey] = key
-            return result
-        }
-        if (isPlainObject(v)) {
-            const result = new O(v as any) as any
-            result[parent] = this
-            result[parentKey] = key
-            return result
-        }
-        return v as any
-    }
-    set = (key: number, newValue: T): typeof this => {
-        this.data = [...this.data]
-        this.data[key] = newValue
-        if (this[parent]) {
-            ;(this[parent] as any).set(this[parentKey], this.data)
-        }
-        return this
-    }
-    valueOf = (): P => {
-        if (!this[parent]) return this.data as any
-        return this[parent].valueOf() as any
-    }
-}
-
-/** 安全地修改一个对象或者数组 */
-export function M<T extends Array<any> | Record<string, any>>(data: T): T extends Array<any> ? A<T[number]> : O<T> {
-    return (Array.isArray(data) ? new A(data) : new O(data)) as any
 }
 
 /**
