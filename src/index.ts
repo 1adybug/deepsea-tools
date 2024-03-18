@@ -884,21 +884,32 @@ export function walkThroughFiber<T>(fiber: TreeFiber<T>, callback: (fiber: TreeF
     }
 }
 
+export type SearchTreeResult<T> = {
+    /** 原始树的 fiber */
+    fiber: TreeFiber<T>
+    /** 搜索后的树 */
+    searchTree: TreeNode<T>[]
+    /** 自身符合条件的 fiber */
+    trueFibers: Set<TreeFiber<T>>
+    /** 最终被添加进结果的 fiber 和 node 的映射 */
+    addedFiberMap: Map<TreeFiber<T>, TreeNode<T>>
+}
+
 /**
  * 从树中搜索符合条件的节点
  * @param treeOrFiber 树或者 fiber
  * @param callback 回调函数，最好使用 useCallback 包裹
- * @param transform 转换函数
+ * @param transform 转换函数，最好使用 useCallback 包裹
  */
 
-export function useSearchTree<T>(treeOrFiber: TreeNode<T>[] | TreeFiber<T>, callback: (data: T) => boolean): TreeNode<T>[]
-export function useSearchTree<T, K>(treeOrFiber: TreeNode<T>[] | TreeFiber<T>, callback: (data: T) => boolean, transform: (data: T, isTrue: boolean, hasParentIsTrue: boolean) => K): TreeNode<K>[]
+export function useSearchTree<T>(treeOrFiber: TreeNode<T>[] | TreeFiber<T>, callback: (data: T) => boolean): SearchTreeResult<T>
+export function useSearchTree<T, K>(treeOrFiber: TreeNode<T>[] | TreeFiber<T>, callback: (data: T) => boolean, transform: (data: T, isTrue: boolean, hasParentIsTrue: boolean) => K): SearchTreeResult<K>
 export function useSearchTree<T, K>(treeOrFiber: TreeNode<T>[] | TreeFiber<T>, callback: (data: T) => boolean, transform?: (data: T, isTrue: boolean, hasParentIsTrue: boolean) => K) {
-    const fiber = Array.isArray(treeOrFiber) ? treeToFiber(treeOrFiber) : treeOrFiber
-    const treeData = useMemo(() => {
-        const newTree: TreeNode<T>[] = []
+    const fiber = useMemo(() => (Array.isArray(treeOrFiber) ? treeToFiber(treeOrFiber) : treeOrFiber), [treeToFiber])
+    const searchTreeResult: SearchTreeResult<T> = useMemo(() => {
+        const searchTree: TreeNode<T>[] = []
         /** fiber 与 node 的映射 */
-        const treeMap: Map<TreeFiber<T>, TreeNode<T>> = new Map()
+        const addedFiberMap: Map<TreeFiber<T>, TreeNode<T>> = new Map()
         /** 自身符合条件的 fiber */
         const trueFibers: Set<TreeFiber<T>> = new Set()
         /** 检测是否有祖先 fiber 符合条件 */
@@ -914,12 +925,12 @@ export function useSearchTree<T, K>(treeOrFiber: TreeNode<T>[] | TreeFiber<T>, c
         function addFiberToTree(fiber: TreeFiber<T>) {
             const { parent, child, sibling, ...others } = fiber
             const node = transform ? (transform(others as T, trueFibers.has(fiber), parentIsTrue(fiber)) as TreeNode<T>) : (others as TreeNode<T>)
-            treeMap.set(fiber, node)
+            addedFiberMap.set(fiber, node)
             // 如果没有父节点，直接添加到树中
-            if (!parent) return newTree.push(node)
+            if (!parent) return searchTree.push(node)
             // 如果父节点没有添加到树中，先添加父节点
-            if (!treeMap.get(parent)) addFiberToTree(parent)
-            const parentNode = treeMap.get(parent)!
+            if (!addedFiberMap.get(parent)) addFiberToTree(parent)
+            const parentNode = addedFiberMap.get(parent)!
             parentNode.children ??= []
             parentNode.children.push(node)
         }
@@ -930,7 +941,12 @@ export function useSearchTree<T, K>(treeOrFiber: TreeNode<T>[] | TreeFiber<T>, c
             const hasParentIsTrue = parentIsTrue(fiber)
             if (isTrue || hasParentIsTrue) addFiberToTree(fiber)
         })
-        return newTree
-    }, [fiber, callback])
-    return treeData
+        return {
+            fiber,
+            searchTree,
+            addedFiberMap,
+            trueFibers
+        }
+    }, [fiber, callback, transform])
+    return searchTreeResult
 }
