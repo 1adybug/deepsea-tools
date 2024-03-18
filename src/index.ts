@@ -1,13 +1,13 @@
 import { ClassValue, clsx as _clsx } from "clsx"
 import Equal from "is-equal"
 import Cookies from "js-cookie"
-import { DependencyList, useEffect, useRef } from "react"
 import { SetURLSearchParams } from "react-router-dom"
 import robustSegmentIntersect from "robust-segment-intersect"
 import { twMerge } from "tailwind-merge"
 export * from "soda-antd"
 export * from "soda-array"
 export * from "soda-coordinate"
+export * from "soda-hooks"
 export * from "soda-tailwind"
 
 /**
@@ -649,19 +649,6 @@ export function setFrameInterval(callback: () => void, frames: number): () => vo
 }
 
 /**
- * 在 react 中比较数组是否发生变化
- */
-export function useArraySignal<T>(data: T[], compareFn?: (a: T, b: T) => boolean) {
-    const dataRef = useRef(data)
-    const signal = useRef(Symbol("arraySignal"))
-    if (dataRef.current.length !== data.length || dataRef.current.some((it, idx) => (compareFn ? !compareFn(it, data[idx]) : it !== data[idx]))) {
-        signal.current = Symbol("arraySignal")
-        dataRef.current = data
-    }
-    return signal.current
-}
-
-/**
  * 取余函数
  * @param a 被除数
  * @param b 除数
@@ -693,27 +680,6 @@ export function drawArc(x: number, y: number, radius: number, startAngle: number
     const { line = false, anticlockwise = false } = options
 
     return `${line ? "L" : "M"} ${x + radius * Math.cos(startAngle)} ${y + radius * Math.sin(startAngle)} A ${radius} ${radius} 0 ${anticlockwise ? (startAngle > endAngle ? "0 0" : "1 0") : startAngle > endAngle ? "1 1" : "0 1"} ${x + radius * Math.cos(endAngle)} ${y + radius * Math.sin(endAngle)}`
-}
-
-export function useAsync(effect: () => Promise<void>, callback: () => void, deps?: DependencyList): void
-export function useAsync(effect: () => Promise<void>, deps?: DependencyList): void
-export function useAsync(effect: () => Promise<void>, callbackOrDeps?: (() => void) | DependencyList, deps?: DependencyList) {
-    if (callbackOrDeps === undefined) {
-        useEffect(() => {
-            effect()
-        })
-        return
-    }
-    if (typeof callbackOrDeps === "function") {
-        useEffect(() => {
-            effect()
-            return callbackOrDeps
-        }, deps)
-        return
-    }
-    useEffect(() => {
-        effect()
-    }, callbackOrDeps)
 }
 
 export type GetTipString<T extends string> = T | (string & {})
@@ -862,4 +828,38 @@ export function splitTextToLines(text: string, options?: SplitTextToLinesOptions
  */
 export function clsx(...inputs: ClassValue[]) {
     return twMerge(_clsx(...inputs))
+}
+
+export type TreeNode<T> = T & {
+    children?: TreeNode<T>[]
+}
+
+export type Fiber<T> = T & {
+    parent: Fiber<T> | null
+    child: Fiber<T> | null
+    sibling: Fiber<T> | null
+}
+
+export function treeToFiber<T>(tree: TreeNode<T>[]): Fiber<T> {
+    if (tree.length === 0) throw new Error("树不能为空")
+    let first: Fiber<T>
+    function createFiber(tree: TreeNode<T>[], parent: Fiber<T> | null): void {
+        let prev: Fiber<T> | null = null
+        tree.forEach(item => {
+            const { children, ...others } = item
+            const fiber: Fiber<T> = {
+                ...(others as T),
+                parent,
+                child: null,
+                sibling: null
+            }
+            first ??= fiber
+            if (parent && !parent.child) parent.child = fiber
+            if (prev) prev.sibling = fiber
+            prev = fiber
+            if (children) createFiber(children, fiber)
+        })
+    }
+    createFiber(tree, null)
+    return first!
 }
