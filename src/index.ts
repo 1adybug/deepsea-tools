@@ -863,3 +863,21 @@ export function treeToFiber<T>(tree: TreeNode<T>[]): Fiber<T> {
     createFiber(tree, null)
     return first!
 }
+
+export function getNextFiber<T>(fiber: Fiber<T>): Fiber<T> | null {
+    if (fiber.child) return fiber.child
+    if (fiber.sibling) return fiber.sibling
+    let parent = fiber.parent
+    while (parent) {
+        if (parent.sibling) return parent.sibling
+        parent = parent.parent
+    }
+    return null
+}
+
+export function walkThroughFiber<T>(fiber: Fiber<T>, callback: (fiber: Fiber<T>) => void): void {
+    while (fiber) {
+        callback(fiber)
+        fiber = getNextFiber(fiber)!
+    }
+}
