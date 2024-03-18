@@ -835,20 +835,20 @@ export type TreeNode<T> = T & {
     children?: TreeNode<T>[] | undefined
 }
 
-export type Fiber<T> = T & {
-    parent: Fiber<T> | null
-    child: Fiber<T> | null
-    sibling: Fiber<T> | null
+export type TreeFiber<T> = T & {
+    parent: TreeFiber<T> | null
+    child: TreeFiber<T> | null
+    sibling: TreeFiber<T> | null
 }
 
-export function treeToFiber<T>(tree: TreeNode<T>[]): Fiber<T> {
+export function treeToFiber<T>(tree: TreeNode<T>[]): TreeFiber<T> {
     if (tree.length === 0) throw new Error("树不能为空")
-    let first: Fiber<T>
-    function createFiber(tree: TreeNode<T>[], parent: Fiber<T> | null): void {
-        let prev: Fiber<T> | null = null
+    let first: TreeFiber<T>
+    function createFiber(tree: TreeNode<T>[], parent: TreeFiber<T> | null): void {
+        let prev: TreeFiber<T> | null = null
         tree.forEach(item => {
             const { children, ...others } = item
-            const fiber: Fiber<T> = {
+            const fiber: TreeFiber<T> = {
                 ...(others as T),
                 parent,
                 child: null,
@@ -865,7 +865,7 @@ export function treeToFiber<T>(tree: TreeNode<T>[]): Fiber<T> {
     return first!
 }
 
-export function getNextFiber<T>(fiber: Fiber<T>): Fiber<T> | null {
+export function getNextFiber<T>(fiber: TreeFiber<T>): TreeFiber<T> | null {
     if (fiber.child) return fiber.child
     if (fiber.sibling) return fiber.sibling
     let parent = fiber.parent
@@ -876,7 +876,7 @@ export function getNextFiber<T>(fiber: Fiber<T>): Fiber<T> | null {
     return null
 }
 
-export function walkThroughFiber<T>(fiber: Fiber<T>, callback: (fiber: Fiber<T>) => void): void {
+export function walkThroughFiber<T>(fiber: TreeFiber<T>, callback: (fiber: TreeFiber<T>) => void): void {
     if (fiber.parent) throw new Error("根节点的 parent 必须为空")
     while (fiber) {
         callback(fiber)
@@ -891,18 +891,18 @@ export function walkThroughFiber<T>(fiber: Fiber<T>, callback: (fiber: Fiber<T>)
  * @param transform 转换函数
  */
 
-export function useSearchTree<T>(treeOrFiber: TreeNode<T>[] | Fiber<T>, callback: (data: T) => boolean): TreeNode<T>[]
-export function useSearchTree<T, K>(treeOrFiber: TreeNode<T>[] | Fiber<T>, callback: (data: T) => boolean, transform: (data: T, isTrue: boolean, hasParentIsTrue: boolean) => K): TreeNode<K>[]
-export function useSearchTree<T, K>(treeOrFiber: TreeNode<T>[] | Fiber<T>, callback: (data: T) => boolean, transform?: (data: T, isTrue: boolean, hasParentIsTrue: boolean) => K) {
+export function useSearchTree<T>(treeOrFiber: TreeNode<T>[] | TreeFiber<T>, callback: (data: T) => boolean): TreeNode<T>[]
+export function useSearchTree<T, K>(treeOrFiber: TreeNode<T>[] | TreeFiber<T>, callback: (data: T) => boolean, transform: (data: T, isTrue: boolean, hasParentIsTrue: boolean) => K): TreeNode<K>[]
+export function useSearchTree<T, K>(treeOrFiber: TreeNode<T>[] | TreeFiber<T>, callback: (data: T) => boolean, transform?: (data: T, isTrue: boolean, hasParentIsTrue: boolean) => K) {
     const fiber = Array.isArray(treeOrFiber) ? treeToFiber(treeOrFiber) : treeOrFiber
     const treeData = useMemo(() => {
         const newTree: TreeNode<T>[] = []
         /** fiber 与 node 的映射 */
-        const treeMap: Map<Fiber<T>, TreeNode<T>> = new Map()
+        const treeMap: Map<TreeFiber<T>, TreeNode<T>> = new Map()
         /** 自身符合条件的 fiber */
-        const trueFibers: Set<Fiber<T>> = new Set()
+        const trueFibers: Set<TreeFiber<T>> = new Set()
         /** 检测是否有祖先 fiber 符合条件 */
-        function parentIsTrue(fiber: Fiber<T>) {
+        function parentIsTrue(fiber: TreeFiber<T>) {
             let parent = fiber.parent
             while (parent) {
                 if (trueFibers.has(parent)) return true
@@ -911,7 +911,7 @@ export function useSearchTree<T, K>(treeOrFiber: TreeNode<T>[] | Fiber<T>, callb
             return false
         }
         /** 添加 fiber 到树 */
-        function addFiberToTree(fiber: Fiber<T>) {
+        function addFiberToTree(fiber: TreeFiber<T>) {
             const { parent, child, sibling, ...others } = fiber
             const node = transform ? (transform(others as T, trueFibers.has(fiber), parentIsTrue(fiber)) as TreeNode<T>) : (others as TreeNode<T>)
             treeMap.set(fiber, node)
