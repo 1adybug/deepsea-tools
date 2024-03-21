@@ -1,7 +1,7 @@
 import { clsx as _clsx, ClassValue } from "clsx"
 import Equal from "is-equal"
 import Cookies from "js-cookie"
-import { spawn, SpawnOptions, SpawnOptionsWithoutStdio, SpawnOptionsWithStdioTuple, StdioNull, StdioPipe } from "node:child_process"
+import { spawn, SpawnOptions, SpawnOptionsWithoutStdio, SpawnOptionsWithStdioTuple, StdioNull, StdioPipe } from "child_process"
 import { useMemo } from "react"
 import { SetURLSearchParams } from "react-router-dom"
 import robustSegmentIntersect from "robust-segment-intersect"
