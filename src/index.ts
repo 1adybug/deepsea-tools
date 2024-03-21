@@ -1,6 +1,7 @@
-import { ClassValue, clsx as _clsx } from "clsx"
+import { clsx as _clsx, ClassValue } from "clsx"
 import Equal from "is-equal"
 import Cookies from "js-cookie"
+import { spawn, SpawnOptions, SpawnOptionsWithoutStdio, SpawnOptionsWithStdioTuple, StdioNull, StdioPipe } from "node:child_process"
 import { useMemo } from "react"
 import { SetURLSearchParams } from "react-router-dom"
 import robustSegmentIntersect from "robust-segment-intersect"
@@ -10,6 +11,44 @@ export * from "soda-array"
 export * from "soda-coordinate"
 export * from "soda-hooks"
 export * from "soda-tailwind"
+
+export function spawnAsync(command: string, options?: SpawnOptionsWithoutStdio): Promise<void>
+export function spawnAsync(command: string, options: SpawnOptionsWithStdioTuple<StdioPipe, StdioPipe, StdioPipe>): Promise<void>
+export function spawnAsync(command: string, options: SpawnOptionsWithStdioTuple<StdioPipe, StdioPipe, StdioNull>): Promise<void>
+export function spawnAsync(command: string, options: SpawnOptionsWithStdioTuple<StdioPipe, StdioNull, StdioPipe>): Promise<void>
+export function spawnAsync(command: string, options: SpawnOptionsWithStdioTuple<StdioNull, StdioPipe, StdioPipe>): Promise<void>
+export function spawnAsync(command: string, options: SpawnOptionsWithStdioTuple<StdioPipe, StdioNull, StdioNull>): Promise<void>
+export function spawnAsync(command: string, options: SpawnOptionsWithStdioTuple<StdioNull, StdioPipe, StdioNull>): Promise<void>
+export function spawnAsync(command: string, options: SpawnOptionsWithStdioTuple<StdioNull, StdioNull, StdioPipe>): Promise<void>
+export function spawnAsync(command: string, options: SpawnOptionsWithStdioTuple<StdioNull, StdioNull, StdioNull>): Promise<void>
+export function spawnAsync(command: string, options: SpawnOptions): Promise<void>
+export function spawnAsync(command: string, args?: readonly string[], options?: SpawnOptionsWithoutStdio): Promise<void>
+export function spawnAsync(command: string, args: readonly string[], options: SpawnOptionsWithStdioTuple<StdioPipe, StdioPipe, StdioPipe>): Promise<void>
+export function spawnAsync(command: string, args: readonly string[], options: SpawnOptionsWithStdioTuple<StdioPipe, StdioPipe, StdioNull>): Promise<void>
+export function spawnAsync(command: string, args: readonly string[], options: SpawnOptionsWithStdioTuple<StdioPipe, StdioNull, StdioPipe>): Promise<void>
+export function spawnAsync(command: string, args: readonly string[], options: SpawnOptionsWithStdioTuple<StdioNull, StdioPipe, StdioPipe>): Promise<void>
+export function spawnAsync(command: string, args: readonly string[], options: SpawnOptionsWithStdioTuple<StdioPipe, StdioNull, StdioNull>): Promise<void>
+export function spawnAsync(command: string, args: readonly string[], options: SpawnOptionsWithStdioTuple<StdioNull, StdioPipe, StdioNull>): Promise<void>
+export function spawnAsync(command: string, args: readonly string[], options: SpawnOptionsWithStdioTuple<StdioNull, StdioNull, StdioPipe>): Promise<void>
+export function spawnAsync(command: string, args: readonly string[], options: SpawnOptionsWithStdioTuple<StdioNull, StdioNull, StdioNull>): Promise<void>
+export function spawnAsync(command: string, args: readonly string[], options: SpawnOptions): Promise<void>
+export async function spawnAsync(command: string, args?: any, options?: any) {
+    if (Array.isArray(args)) {
+        options ??= { shell: true, stdio: "inherit" }
+    } else if (!options) {
+        args ??= { shell: true, stdio: "inherit" }
+    }
+    await new Promise<void>((resolve, reject) => {
+        const child = spawn(command, args, options)
+        child.on("exit", code => {
+            if (code !== 0) {
+                reject(new Error(`Command failed with code ${code}`))
+                return
+            }
+            resolve()
+        })
+    })
+}
 
 /**
  * 休眠指定时间
