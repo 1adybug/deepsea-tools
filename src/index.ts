@@ -1,7 +1,8 @@
+import { exec, ExecOptions, spawn, SpawnOptions, SpawnOptionsWithoutStdio, SpawnOptionsWithStdioTuple, StdioNull, StdioPipe } from "child_process"
 import { clsx as _clsx, ClassValue } from "clsx"
+import { ObjectEncodingOptions } from "fs"
 import Equal from "is-equal"
 import Cookies from "js-cookie"
-import { spawn, SpawnOptions, SpawnOptionsWithoutStdio, SpawnOptionsWithStdioTuple, StdioNull, StdioPipe } from "child_process"
 import { useMemo } from "react"
 import { SetURLSearchParams } from "react-router-dom"
 import robustSegmentIntersect from "robust-segment-intersect"
@@ -33,11 +34,6 @@ export function spawnAsync(command: string, args: readonly string[], options: Sp
 export function spawnAsync(command: string, args: readonly string[], options: SpawnOptionsWithStdioTuple<StdioNull, StdioNull, StdioNull>): Promise<void>
 export function spawnAsync(command: string, args: readonly string[], options: SpawnOptions): Promise<void>
 export async function spawnAsync(command: string, args?: any, options?: any) {
-    if (Array.isArray(args)) {
-        options ??= { shell: true, stdio: "inherit" }
-    } else if (!options) {
-        args ??= { shell: true, stdio: "inherit" }
-    }
     await new Promise<void>((resolve, reject) => {
         const child = spawn(command, args, options)
         child.on("exit", code => {
@@ -46,6 +42,28 @@ export async function spawnAsync(command: string, args?: any, options?: any) {
                 return
             }
             resolve()
+        })
+    })
+}
+
+export async function execAsync(command: string): Promise<string>
+export async function execAsync(command: string, options: { encoding: "buffer" | null } & ExecOptions): Promise<Buffer>
+export async function execAsync(command: string, options: { encoding: BufferEncoding } & ExecOptions): Promise<string>
+export async function execAsync(command: string, options: { encoding: BufferEncoding } & ExecOptions): Promise<string | Buffer>
+export async function execAsync(command: string, options: ExecOptions): Promise<string>
+export async function execAsync(command: string, options: (ObjectEncodingOptions & ExecOptions) | undefined | null): Promise<string | Buffer>
+export async function execAsync(command: string, options?: any) {
+    return await new Promise<string | Buffer>((resolve, reject) => {
+        exec(command, options, (error, stdout, stderr) => {
+            if (error) {
+                reject(error)
+                return
+            }
+            if (stderr) {
+                reject(typeof stderr === "string" ? new Error(stderr) : stderr)
+                return
+            }
+            resolve(stdout)
         })
     })
 }
