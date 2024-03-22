@@ -46,24 +46,20 @@ export async function spawnAsync(command: string, args?: any, options?: any) {
     })
 }
 
-export async function execAsync(command: string): Promise<string>
-export async function execAsync(command: string, options: { encoding: "buffer" | null } & ExecOptions): Promise<Buffer>
-export async function execAsync(command: string, options: { encoding: BufferEncoding } & ExecOptions): Promise<string>
-export async function execAsync(command: string, options: { encoding: BufferEncoding } & ExecOptions): Promise<string | Buffer>
-export async function execAsync(command: string, options: ExecOptions): Promise<string>
-export async function execAsync(command: string, options: (ObjectEncodingOptions & ExecOptions) | undefined | null): Promise<string | Buffer>
+export async function execAsync(command: string): Promise<[string, string]>
+export async function execAsync(command: string, options: { encoding: "buffer" | null } & ExecOptions): Promise<[Buffer, Buffer]>
+export async function execAsync(command: string, options: { encoding: BufferEncoding } & ExecOptions): Promise<[string, string]>
+export async function execAsync(command: string, options: { encoding: BufferEncoding } & ExecOptions): Promise<[string | Buffer, string | Buffer]>
+export async function execAsync(command: string, options: ExecOptions): Promise<[string, string]>
+export async function execAsync(command: string, options: (ObjectEncodingOptions & ExecOptions) | undefined | null): Promise<[string | Buffer, string | Buffer]>
 export async function execAsync(command: string, options?: any) {
-    return await new Promise<string | Buffer>((resolve, reject) => {
+    return await new Promise<[string | Buffer, string | Buffer]>((resolve, reject) => {
         exec(command, options, (error, stdout, stderr) => {
             if (error) {
                 reject(error)
                 return
             }
-            if (stderr) {
-                reject(typeof stderr === "string" ? new Error(stderr) : stderr)
-                return
-            }
-            resolve(stdout)
+            resolve([stdout, stderr])
         })
     })
 }
