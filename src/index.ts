@@ -1,6 +1,4 @@
-import { exec, ExecOptions, spawn, SpawnOptions, SpawnOptionsWithoutStdio, SpawnOptionsWithStdioTuple, StdioNull, StdioPipe } from "child_process"
 import { clsx as _clsx, ClassValue } from "clsx"
-import { ObjectEncodingOptions } from "fs"
 import Equal from "is-equal"
 import Cookies from "js-cookie"
 import { useMemo } from "react"
@@ -12,62 +10,6 @@ export * from "soda-array"
 export * from "soda-coordinate"
 export * from "soda-hooks"
 export * from "soda-tailwind"
-
-export function spawnAsync(command: string, options?: SpawnOptionsWithoutStdio): Promise<void>
-export function spawnAsync(command: string, options: SpawnOptionsWithStdioTuple<StdioPipe, StdioPipe, StdioPipe>): Promise<void>
-export function spawnAsync(command: string, options: SpawnOptionsWithStdioTuple<StdioPipe, StdioPipe, StdioNull>): Promise<void>
-export function spawnAsync(command: string, options: SpawnOptionsWithStdioTuple<StdioPipe, StdioNull, StdioPipe>): Promise<void>
-export function spawnAsync(command: string, options: SpawnOptionsWithStdioTuple<StdioNull, StdioPipe, StdioPipe>): Promise<void>
-export function spawnAsync(command: string, options: SpawnOptionsWithStdioTuple<StdioPipe, StdioNull, StdioNull>): Promise<void>
-export function spawnAsync(command: string, options: SpawnOptionsWithStdioTuple<StdioNull, StdioPipe, StdioNull>): Promise<void>
-export function spawnAsync(command: string, options: SpawnOptionsWithStdioTuple<StdioNull, StdioNull, StdioPipe>): Promise<void>
-export function spawnAsync(command: string, options: SpawnOptionsWithStdioTuple<StdioNull, StdioNull, StdioNull>): Promise<void>
-export function spawnAsync(command: string, options: SpawnOptions): Promise<void>
-export function spawnAsync(command: string, args?: readonly string[], options?: SpawnOptionsWithoutStdio): Promise<void>
-export function spawnAsync(command: string, args: readonly string[], options: SpawnOptionsWithStdioTuple<StdioPipe, StdioPipe, StdioPipe>): Promise<void>
-export function spawnAsync(command: string, args: readonly string[], options: SpawnOptionsWithStdioTuple<StdioPipe, StdioPipe, StdioNull>): Promise<void>
-export function spawnAsync(command: string, args: readonly string[], options: SpawnOptionsWithStdioTuple<StdioPipe, StdioNull, StdioPipe>): Promise<void>
-export function spawnAsync(command: string, args: readonly string[], options: SpawnOptionsWithStdioTuple<StdioNull, StdioPipe, StdioPipe>): Promise<void>
-export function spawnAsync(command: string, args: readonly string[], options: SpawnOptionsWithStdioTuple<StdioPipe, StdioNull, StdioNull>): Promise<void>
-export function spawnAsync(command: string, args: readonly string[], options: SpawnOptionsWithStdioTuple<StdioNull, StdioPipe, StdioNull>): Promise<void>
-export function spawnAsync(command: string, args: readonly string[], options: SpawnOptionsWithStdioTuple<StdioNull, StdioNull, StdioPipe>): Promise<void>
-export function spawnAsync(command: string, args: readonly string[], options: SpawnOptionsWithStdioTuple<StdioNull, StdioNull, StdioNull>): Promise<void>
-export function spawnAsync(command: string, args: readonly string[], options: SpawnOptions): Promise<void>
-export async function spawnAsync(command: string, args?: any, options?: any) {
-    await new Promise<void>((resolve, reject) => {
-        const child = spawn(command, args, options)
-        child.on("exit", code => {
-            if (code !== 0) {
-                reject(new Error(`Command failed with code ${code}`))
-                return
-            }
-            resolve()
-        })
-    })
-}
-
-export type ExecResult<T> = {
-    stdout: T
-    stderr: T
-}
-
-export async function execAsync(command: string): Promise<ExecResult<string>>
-export async function execAsync(command: string, options: { encoding: "buffer" | null } & ExecOptions): Promise<ExecResult<Buffer>>
-export async function execAsync(command: string, options: { encoding: BufferEncoding } & ExecOptions): Promise<ExecResult<string>>
-export async function execAsync(command: string, options: { encoding: BufferEncoding } & ExecOptions): Promise<ExecResult<string | Buffer>>
-export async function execAsync(command: string, options: ExecOptions): Promise<ExecResult<string>>
-export async function execAsync(command: string, options: (ObjectEncodingOptions & ExecOptions) | undefined | null): Promise<ExecResult<string | Buffer>>
-export async function execAsync(command: string, options?: any) {
-    return await new Promise<ExecResult<string | Buffer>>((resolve, reject) => {
-        exec(command, options, (error, stdout, stderr) => {
-            if (error) {
-                reject(error)
-                return
-            }
-            resolve({ stdout, stderr })
-        })
-    })
-}
 
 /**
  * 休眠指定时间
@@ -83,8 +25,8 @@ export async function sleep(time: number): Promise<1> {
 
 /**
  * 取两个整数之间的随机数
- * @param {string} start - 开始的数字，闭区间
- * @param {string} end - 结束的数字，闭区间
+ * @param {number} start - 开始的数字，闭区间
+ * @param {number} end - 结束的数字，闭区间
  */
 export function getRandomBetween(start: number, end: number) {
     if (!Number.isInteger(start)) throw new Error("开始的数字必须是整数")
