@@ -24,7 +24,7 @@
         "array.d.ts",
         "compiled",
         "dist",
-        "modules.d.ts",
+        "types.d.ts",
         "src"
     ],
     "publishConfig": {
