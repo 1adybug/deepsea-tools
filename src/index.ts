@@ -1,11 +1,10 @@
 import { clsx as _clsx, ClassValue } from "clsx"
-import Equal from "is-equal"
+import equal from "fast-deep-equal"
 import Cookies from "js-cookie"
 import { useMemo } from "react"
-import { SetURLSearchParams } from "react-router-dom"
 import robustSegmentIntersect from "robust-segment-intersect"
 import { twMerge } from "tailwind-merge"
-export * from "soda-antd"
+export { default as equal } from "fast-deep-equal"
 export * from "soda-array"
 export * from "soda-coordinate"
 export * from "soda-hooks"
@@ -128,83 +127,74 @@ export function getRandomId(area?: number) {
 
 /** 判断两个数字是否相等 */
 export function twoNumberIsEqual(a: number, b: number) {
-    if (isNaN(a) && isNaN(b)) return true
     if (a === b) return true
+    if (Number.isNaN(a) && Number.isNaN(b)) return true
+    if (Number.isNaN(a) || Number.isNaN(b)) return false
     return Math.abs(a - b) < Number.EPSILON
+}
+
+/** 经纬度坐标 */
+export interface Coord {
+    /** 经度 */
+    longitude: number
+    /** 维度 */
+    latitude: number
 }
 
 /**
  * 获取两个经纬度坐标之间的距离
- * @param {number[]} coord1 - 经纬度一，[维度, 经度]
- * @param {number[]} coord2 - 经纬度二，[维度, 经度]
+ * @param {Coord} coord - 经纬度一，[维度, 经度]
+ * @param {Coord} coord2 - 经纬度二，[维度, 经度]
  * @returns {number} 距离：米
  */
-export function getDistance(coord1: number[], coord2: number[]): number {
+export function getDistance(coord: Coord, coord2: Coord): number {
     function toRadians(d: number) {
         return (d * Math.PI) / 180
     }
-    const [lat1, lng1] = coord1
-    if (lat1 < 0) {
-        throw new Error("经纬度1的纬度小于0°")
-    }
-    if (lat1 > 90) {
-        throw new Error("经纬度1的纬度大于90°")
-    }
-    if (lng1 < 0) {
-        throw new Error("经纬度1的经度小于0°")
-    }
-    if (lng1 > 180) {
-        throw new Error("经纬度1的经度大于180°")
-    }
-    const [lat2, lng2] = coord2
-    if (lat2 < 0) {
-        throw new Error("经纬度2的纬度小于0°")
-    }
-    if (lat2 > 90) {
-        throw new Error("经纬度2的纬度大于90°")
-    }
-    if (lng2 < 0) {
-        throw new Error("经纬度2的经度小于0°")
-    }
-    if (lng2 > 180) {
-        throw new Error("经纬度2的经度大于180°")
-    }
-    const radLat1 = toRadians(lat1)
-    const radLat2 = toRadians(lat2)
+    const { latitude, longitude } = coord
+    const { latitude: latitude2, longitude: longitude2 } = coord2
+    const radLat1 = toRadians(latitude)
+    const radLat2 = toRadians(latitude2)
     const deltaLat = radLat1 - radLat2
-    const deltaLng = toRadians(lng1) - toRadians(lng2)
+    const deltaLng = toRadians(longitude) - toRadians(longitude2)
     const dis = 2 * Math.asin(Math.sqrt(Math.pow(Math.sin(deltaLat / 2), 2) + Math.cos(radLat1) * Math.cos(radLat2) * Math.pow(Math.sin(deltaLng / 2), 2)))
     return dis * 6378137
 }
 
 /**
- * 获取两个经纬度坐标之间的距离
- * @param {number[]} coord1 - 经纬度一，[维度, 经度]
- * @param {number[]} coord2 - 经纬度二，[维度, 经度]
- * @param {number} d1 - 距离一，单位：米
+ * 获取到两个经纬度坐标之间的固定距离的可能的坐标
+ * @param {Coord} coord - 经纬度一，[维度, 经度]
+ * @param {Coord} coord2 - 经纬度二，[维度, 经度]
+ * @param {number} d - 距离一，单位：米
  * @param {number} d2 - 距离二，单位：米
  * @returns {number[][]} - 可能的两个坐标
  */
-export function getCoord(coord1: number[], coord2: number[], d1: number, d2: number): number[][] {
-    const [lat1, lng1] = coord1
-    const [lat2, lng2] = coord2
-    const [m, n] = [lat2 - lat1, lng2 - lng1]
-    const s = getDistance(coord1, [lat2, lng1]) / m
-    const t = getDistance(coord1, [lat1, lng2]) / n
+export function getCoord(coord: Coord, coord2: Coord, d: number, d2: number): Coord[] {
+    const { latitude, longitude } = coord
+    const { latitude: latitude2, longitude: longitude2 } = coord2
+    const [m, n] = [latitude2 - latitude, longitude2 - longitude]
+    const s = getDistance(coord, { latitude: latitude2, longitude }) / m
+    const t = getDistance(coord, { latitude, longitude: longitude2 }) / n
     const e = m * s
     const f = n * t
     const g = -e / f
-    const h = (e ** 2 + f ** 2 + d1 ** 2 - d2 ** 2) / (2 * f)
+    const h = (e ** 2 + f ** 2 + d ** 2 - d2 ** 2) / (2 * f)
     const a = g ** 2 + 1
     const b = 2 * g * h
-    const c = h ** 2 - d1 ** 2
+    const c = h ** 2 - d ** 2
     const ox1 = (-b + (b ** 2 - 4 * a * c) ** (1 / 2)) / (2 * a)
     const oy1 = g * ox1 + h
     const ox2 = (-b - (b ** 2 - 4 * a * c) ** (1 / 2)) / (2 * a)
     const oy2 = g * ox2 + h
     return [
-        [ox1 / s + lat1, oy1 / t + lng1],
-        [ox2 / s + lat1, oy2 / t + lng1]
+        {
+            latitude: ox1 / s + latitude,
+            longitude: oy1 / t + longitude
+        },
+        {
+            latitude: ox2 / s + latitude,
+            longitude: oy2 / t + longitude
+        }
     ]
 }
 
@@ -222,28 +212,13 @@ export function getProperties<T, K extends keyof T>(obj: T, ...keyList: K[]): Pi
 }
 
 /**
- * 判断一个变量是否是非 null 的对象
- */
-export function isObject(a: any) {
-    return typeof a === "object" && a !== null
-}
-
-/**
- * 比较两个变量是否相等
- */
-export function equal(a: any, b: any): boolean {
-    return Equal(a, b)
-}
-
-/**
  * 比较两个变量是否相等
  * @param {string[]} ignoreList - 忽略的 key 集合
  */
 export function compareWithoutProperties<T extends Object>(a: T, b: T, ...ignoreList: (keyof T)[]): boolean {
     if (ignoreList.length === 0) throw new Error(`ignoreList 为空`)
-    return Object.keys(a)
-        .filter(key => !ignoreList.includes(key as keyof T))
-        .every(key => equal(a[key as keyof T], b[key as keyof T]))
+    const keys = Array.from(new Set(Object.keys(a).concat(Object.keys(b))))
+    return keys.filter(key => !ignoreList.includes(key as keyof T)).every(key => equal(a[key as keyof T], b[key as keyof T]))
 }
 
 /**
@@ -341,9 +316,9 @@ export function getAgeFromId(id: string) {
  * 从身份证中获取性别，0是女性，1是男性
  * @param {string} id - 身份证号
  */
-export function getSexFromId(id: string) {
+export function getSexFromId(id: string): 0 | 1 {
     if (!isLegalId(id)) throw new Error("非法身份证号")
-    return Number(id.slice(-2, -1)) % 2
+    return (Number(id.slice(-2, -1)) % 2) as 0 | 1
 }
 
 /** 获取随机姓名 */
@@ -371,10 +346,12 @@ export function getPropertiesIsModified<T>(a: T, b: T): (...keyList: (keyof T)[]
 }
 
 /** 获得一个函数循环出来的数组 */
-export function getArray<T>(length: number, fun: (index: number) => T): T[] {
+export function getArray(length: number): number[]
+export function getArray<T>(length: number, fun: (index: number) => T): T[]
+export function getArray<T>(length: number, fun?: (index: number) => T): (T | number)[] {
     return Array(length)
         .fill(0)
-        .map(($, index) => fun(index))
+        .map((item, index) => (fun ? fun(index) : index))
 }
 
 /** 获取点到线的最短距离 */
@@ -408,135 +385,20 @@ export function getPointToLineMinDistance(point: number[], line: number[][], get
     )
 }
 
-/** 是否是正数 */
-export function isPositiveNumber(x: number) {
-    return typeof x === "number" && x > 0
-}
-
-/** 是否是正整数 */
-export function isPositiveInteger(x: number) {
-    return Number.isInteger(x) && x > 0
-}
-
-/** 是整数或者小数 */
-export function isNumber(x: any): x is number {
-    return typeof x === "number" && /^[\d]*\.?[\d]+$/.test(String(x))
-}
-
-export function parseNumber(str: string) {
-    const result = Number(str)
-    if (isNaN(result)) throw new Error(`${str} 不可以被转换为数字`)
-    if (String(result) !== str) console.warn(`${str} 转换为 ${result}`)
-    return result
-}
-
-export function coordStringToNumber(str: string) {
-    if (str.includes(":")) {
-        const strs = str.split(":")
-        if (strs.length !== 3) throw new Error(`${str} 不可以被转换为数字`)
-        const nums = strs.map(parseNumber)
-        const [x, y, z] = nums
-        return x + y / 60 + z / 3600
-    }
-    return parseNumber(str)
-}
-
-export interface CoordObj1 {
-    lat: number
-    lng: number
-}
-
-export interface CoordObj2 {
-    latitude: number
-    longitude: number
-}
-
-export interface CoordObj3 {
-    lat: string
-    lng: string
-}
-
-export interface CoordObj4 {
-    latitude: string
-    longitude: string
-}
-
-export function coordIsNumberArray(coord: number[] | string[]): coord is number[] {
-    if (coord.length !== 2) throw new Error(`${JSON.stringify(coord)} 的长度不为2`)
-    if (typeof coord[0] === "number" && typeof coord[1] === "number") return true
-    if (typeof coord[0] === "string" && typeof coord[1] === "string") return false
-    throw new Error(`${JSON.stringify(coord)} 的类型有误`)
-}
-
-/** 检查坐标是否合法，合法则返回正确的坐标 */
-export function coordCheck(coord: number[]): number[] {
-    if (coord.length !== 2) throw new Error(`${JSON.stringify(coord)} 的长度不为2`)
-    if (typeof coord[0] !== "number" || isNaN(coord[0]) || typeof coord[1] !== "number" || isNaN(coord[1])) throw new Error(`${JSON.stringify(coord)} 的类型有误`)
-    const [y, x] = coord
-    if (Math.abs(y) <= 90 && Math.abs(x) <= 180) {
-        return [y, x]
-    }
-    if (Math.abs(x) <= 90 && Math.abs(y) <= 180) {
-        throw new Error(`${JSON.stringify(coord)} 似乎将经纬度互换，请检查是否有误`)
-    }
-    throw new Error(`${JSON.stringify(coord)} 的经纬度超出范围`)
-}
-
-/** 将坐标信息转换为真实坐标，即`[维度, 经度]`的格式 */
-export function getRealCoord(coord: number[] | string | string[] | CoordObj1 | CoordObj2 | CoordObj3 | CoordObj4): number[] {
-    if (typeof coord === "string") {
-        const reg = /^[0-9a-z]+$/
-        const nums = coord
-            .replace(/\:/g, "colon")
-            .replace(/\-/g, "minus")
-            .replace(/\./g, "point")
-            .split(/\b/)
-            .filter(str => reg.test(str))
-            .map(str => str.replace(/colon/g, ":").replace(/minus/g, "-").replace(/point/g, "."))
-            .map(coordStringToNumber)
-        if (nums.length !== 2) throw new Error(`${coord} 的格式有误`)
-        return coordCheck(nums)
-    }
-    if (Array.isArray(coord)) {
-        if (coordIsNumberArray(coord)) {
-            return coordCheck(coord)
-        }
-        return coordCheck(coord.map(coordStringToNumber))
-    }
-    if ("lat" in coord && "lng" in coord) {
-        return getRealCoord([coord.lat, coord.lng] as string[] | number[])
-    }
-    if ("latitude" in coord && "longitude" in coord) {
-        return getRealCoord([coord.latitude, coord.longitude] as string[] | number[])
-    }
-    throw new Error(`${coord} 的格式有误`)
-}
-
-export type StringCoord = `${number},${number}`
-
-/** 将任意格式的坐标转换为51坐标 */
-export function get51Coord(coord: number[] | string | string[] | CoordObj1 | CoordObj2 | CoordObj3 | CoordObj4): StringCoord {
-    const [y, x] = getRealCoord(coord)
-    return `${x},${y}`
-}
-
 /** 将浏览器中直接复制的 headers 转换为对象 */
-export function getHeaders(headers: string): Record<string, string> {
-    const result: Record<string, string> = {}
-    headers
+export function getHeaders(headers: string): Headers {
+    return headers
         .split("\n")
         .map(str => str.trim())
         .filter(str => str && !str.startsWith(":"))
-        .forEach(str => {
+        .reduce((acc: Headers, str) => {
             const index = str.indexOf(":")
-            if (index < 1) {
-                throw new Error(`无效的字段${str}`)
-            }
+            if (index < 1) throw new Error(`无效的字段${str}`)
             const key = str.slice(0, index).trim()
             const value = str.slice(index + 1).trim()
-            result[key] = value
-        })
-    return result
+            acc.set(key, value)
+            return acc
+        }, new Headers())
 }
 
 /**
@@ -683,39 +545,6 @@ export function drawArc(x: number, y: number, radius: number, startAngle: number
     return `${line ? "L" : "M"} ${x + radius * Math.cos(startAngle)} ${y + radius * Math.sin(startAngle)} A ${radius} ${radius} 0 ${anticlockwise ? (startAngle > endAngle ? "0 0" : "1 0") : startAngle > endAngle ? "1 1" : "0 1"} ${x + radius * Math.cos(endAngle)} ${y + radius * Math.sin(endAngle)}`
 }
 
-export type GetTipString<T extends string> = T | (string & {})
-
-export type QueryFnToData<T extends Record<string, (param: string | null) => any>> = {
-    [K in keyof T]: ReturnType<T[K]>
-}
-
-export type DataToDataFn<T extends Record<string, any>> = {
-    [K in keyof T]: (data: T[K]) => string | null
-}
-
-/**
- * 将搜索字符串映射为数据
- */
-export function getDataFromQuery<T extends Record<string, (param: string | null) => any>>(params: URLSearchParams, fns: T): QueryFnToData<T> {
-    return Object.keys(fns).reduce((prev: any, key) => {
-        prev[key] = fns[key](params.get(key))
-        return prev
-    }, {})
-}
-
-/**
- * 将数据映射为搜索字符串
- */
-export function setQueryFromData<T extends Record<string, any>>(data: T, fns: DataToDataFn<T>, setParams: SetURLSearchParams): void {
-    setParams(
-        Object.keys(data).reduce((prev: any, key) => {
-            const str = fns[key](data[key])
-            if (str !== null) prev[key] = str
-            return prev
-        }, {})
-    )
-}
-
 /** 创建 cookie 的存储 */
 export function createCookieStorage(): Storage {
     const cookieStorage: Storage = {
@@ -739,10 +568,6 @@ export function createCookieStorage(): Storage {
         }
     }
     return cookieStorage
-}
-
-export function getKeys<T extends object>(object: T): (keyof T)[] {
-    return Object.keys(object) as (keyof T)[]
 }
 
 /**
